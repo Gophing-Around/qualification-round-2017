@@ -9,15 +9,20 @@ func algorithm(
 	endpointsMap mapOfEndpoints,
 	requestList []*RequestGroup,
 ) int {
-
 	for _, server := range serversMap {
 		videoTotlaSize := 0
-		for _, video := range videos {
-			if videoTotlaSize+video.size > server.serverCapacity {
+
+		for _, potentialRequest := range server.potentialRequests {
+			video := potentialRequest.video
+			videoAlreadyAllocated := server.allocatedVideoMap[potentialRequest.videoId]
+
+			if videoAlreadyAllocated || videoTotlaSize+video.size > server.serverCapacity {
 				continue
 			}
+
 			server.allocatedVideos = append(server.allocatedVideos, fmt.Sprintf("%d", video.id))
 			videoTotlaSize += video.size
+			server.allocatedVideoMap[potentialRequest.videoId] = true
 		}
 	}
 

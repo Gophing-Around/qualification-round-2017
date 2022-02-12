@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type mapOfServers map[int]*Server
+type mapOfServers map[int]*CacheServer
 type mapOfEndpoints map[int]*Endpoint
 
 type Config struct {
@@ -25,7 +25,7 @@ type Endpoint struct {
 	id        int
 	dcLatency int
 	nCaches   int
-	servers   map[int]*Server
+	servers   map[int]*CacheServer
 }
 
 type RequestGroup struct {
@@ -37,12 +37,14 @@ type RequestGroup struct {
 	endpoint *Endpoint
 }
 
-type Server struct {
+type CacheServer struct {
 	id                 int
 	endpointLatencyMap map[int]int
 	serverCapacity     int
 
-	allocatedVideos []string // list video id
+	potentialRequests []*RequestGroup
+	allocatedVideos   []string // list video id
+	allocatedVideoMap map[int]bool
 }
 
 func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints, []*RequestGroup) {
@@ -67,7 +69,7 @@ func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints
 		videos[id] = &Video{id: id, size: toint(size)}
 	}
 
-	serversMap := make(map[int]*Server)
+	serversMap := make(map[int]*CacheServer)
 
 	endpointsMap := make(map[int]*Endpoint)
 
@@ -80,7 +82,7 @@ func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints
 			id:        i,
 			dcLatency: toint(endpointConfigLineParts[0]),
 			nCaches:   nCaches,
-			servers:   make(map[int]*Server),
+			servers:   make(map[int]*CacheServer),
 		}
 		index++
 		for k := 0; k < nCaches; k++ {
@@ -91,10 +93,12 @@ func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints
 
 			server, ok := serversMap[serverId]
 			if !ok {
-				server = &Server{
+				server = &CacheServer{
 					id:                 serverId,
 					endpointLatencyMap: make(map[int]int),
 					serverCapacity:     config.cacheServersCapacity,
+
+					allocatedVideoMap: make(map[int]bool),
 				}
 			}
 
@@ -122,6 +126,12 @@ func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints
 			nRequests:  toint(requestConfigLineParts[2]),
 		}
 		requestsList = append(requestsList, req)
+	}
+
+	for _, request := range requestsList {
+		for _, server := range request.endpoint.servers {
+			server.potentialRequests = append(server.potentialRequests, request)
+		}
 	}
 
 	return config, videos, serversMap, endpointsMap, requestsList
