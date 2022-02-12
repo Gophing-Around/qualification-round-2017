@@ -32,7 +32,7 @@ func algorithm(
 			videoASize := requestA.video.size
 			videoBSize := requestB.video.size
 
-			return gainA*requestA.nRequests-videoASize > gainB*requestB.nRequests-videoBSize
+			return gainA*requestA.nRequests/videoASize > gainB*requestB.nRequests/videoBSize
 		})
 
 		for _, potentialRequest := range server.potentialRequests {
