@@ -16,7 +16,24 @@ func algorithm(
 
 	globalAllocationMap := make(map[int]int)
 
-	for _, server := range serversMap {
+	sort.Slice(serversList, func(a, b int) bool {
+		serverA := serversList[a]
+		serverB := serversList[b]
+
+		potReqA := 0
+		for _, req := range serverA.potentialRequests {
+			potReqA += req.nRequests
+		}
+
+		potReqB := 0
+		for _, req := range serverB.potentialRequests {
+			potReqB += req.nRequests
+		}
+
+		return potReqA > potReqB
+	})
+
+	for _, server := range serversList {
 		videoTotlaSize := 0
 
 		sort.Slice(server.potentialRequests, func(a int, b int) bool {
