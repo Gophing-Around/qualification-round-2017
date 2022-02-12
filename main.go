@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 )
 
 func main() {
@@ -20,14 +19,27 @@ func main() {
 		fmt.Printf("****************** INPUT: %s\n", fileName)
 		inputSet := readFile(fmt.Sprintf("./inputFiles/%s.in", fileName))
 
-		input := buildInput(inputSet)
-		printInputMetrics(input)
+		config, videos, serversMap, endpointsMap, requestsList := buildInput(inputSet)
+		// fmt.Printf("Config %+v\n", config)
+		// for i, video := range videos {
+		// 	fmt.Printf("video %d %+v\n", i, video)
+		// }
+		// for i, server := range serversMap {
+		// 	fmt.Printf("serversMap %d %+v\n", i, server)
+		// }
+		// for i, endpoint := range endpointsMap {
+		// 	fmt.Printf("endpointsMap %d %+v\n", i, endpoint)
+		// }
+		// for i, req := range requestsList {
+		// 	fmt.Printf("requestsList %d %+v\n", i, req)
+		// }
+		// printInputMetrics(input)
 
-		result := algorithm(input)
+		result := algorithm(config, videos, serversMap, endpointsMap, requestsList)
 
-		output := buildOutput(result)
-		printResultMetrics(result)
-		
-		ioutil.WriteFile(fmt.Sprintf("./result/%s.out", fileName), []byte(output), 0644)
+		// output := buildOutput(result)
+		// printResultMetrics(result)
+
+		// ioutil.WriteFile(fmt.Sprintf("./result/%s.out", fileName), []byte(output), 0644)
 	}
 }

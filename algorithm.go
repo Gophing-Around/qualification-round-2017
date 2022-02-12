@@ -1,5 +1,12 @@
 package main
 
-func algorithm(input int) int {
+func algorithm(
+	Config Config,
+	videos []*Video,
+	serversMap mapOfServers,
+	endpoointsMap mapOfEndpoints,
+	requestList []*RequestGroup,
+) int {
+
 	return 42
 }
