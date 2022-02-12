@@ -67,7 +67,7 @@ func algorithm(
 			}
 
 			// patch group
-			group.score += score
+			group.score = (group.score + score) / len(server.potentialRequests)
 		}
 
 		sort.Slice(groupedPotentialRequests, func(a int, b int) bool {
