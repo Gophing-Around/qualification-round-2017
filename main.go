@@ -20,7 +20,7 @@ func main() {
 		fmt.Printf("****************** INPUT: %s\n", fileName)
 		inputSet := readFile(fmt.Sprintf("./inputFiles/%s.in", fileName))
 
-		config, videos, serversMap, endpointsMap, requestsList := buildInput(inputSet)
+		config, videos, serversMap, endpointsMap, requestsList, serversList := buildInput(inputSet)
 		// fmt.Printf("Config %+v\n", config)
 		// for i, video := range videos {
 		// 	fmt.Printf("video %d %+v\n", i, video)
@@ -36,7 +36,7 @@ func main() {
 		// }
 		// printInputMetrics(input)
 
-		algorithm(config, videos, serversMap, endpointsMap, requestsList)
+		algorithm(config, videos, serversMap, endpointsMap, requestsList, serversList)
 
 		output := buildOutput(serversMap)
 		// printResultMetrics(result)

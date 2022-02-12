@@ -11,6 +11,7 @@ func algorithm(
 	serversMap mapOfServers,
 	endpointsMap mapOfEndpoints,
 	requestList []*RequestGroup,
+	serversList []*CacheServer,
 ) int {
 
 	globalAllocationMap := make(map[int]int)

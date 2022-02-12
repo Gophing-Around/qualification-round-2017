@@ -47,7 +47,14 @@ type CacheServer struct {
 	allocatedVideoMap map[int]bool
 }
 
-func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints, []*RequestGroup) {
+func buildInput(inputSet string) (
+	Config,
+	[]*Video,
+	mapOfServers,
+	mapOfEndpoints,
+	[]*RequestGroup,
+	[]*CacheServer,
+) {
 
 	lines := splitNewLines(inputSet)
 
@@ -70,6 +77,7 @@ func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints
 	}
 
 	serversMap := make(map[int]*CacheServer)
+	serversList := make([]*CacheServer, 0)
 
 	endpointsMap := make(map[int]*Endpoint)
 
@@ -100,6 +108,7 @@ func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints
 
 					allocatedVideoMap: make(map[int]bool),
 				}
+				serversList = append(serversList, server)
 			}
 
 			server.endpointLatencyMap[i] = toint(cacheConfigParts[1])
@@ -134,7 +143,7 @@ func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints
 		}
 	}
 
-	return config, videos, serversMap, endpointsMap, requestsList
+	return config, videos, serversMap, endpointsMap, requestsList, serversList
 }
 
 func buildOutput(servers mapOfServers) string {
