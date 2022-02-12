@@ -13,7 +13,7 @@ func algorithm(
 	requestList []*RequestGroup,
 ) int {
 
-	globalAllocationMap := make(map[int]bool)
+	globalAllocationMap := make(map[int]int)
 
 	for _, server := range serversMap {
 		videoTotlaSize := 0
@@ -40,9 +40,16 @@ func algorithm(
 		for _, potentialRequest := range server.potentialRequests {
 			video := potentialRequest.video
 			videoAlreadyAllocatedInServer := server.allocatedVideoMap[potentialRequest.videoId]
-			videoAlreadyAllocatedGlobally := globalAllocationMap[potentialRequest.videoId]
+			globalLatencyPerRequest, videoAlreadyAllocatedGlobally := globalAllocationMap[potentialRequest.videoId]
 
-			if videoAlreadyAllocatedGlobally || videoAlreadyAllocatedInServer || videoTotlaSize+video.size > server.serverCapacity {
+			// videoAlreadyAllocatedGlobally ||
+			if videoAlreadyAllocatedInServer || videoTotlaSize+video.size > server.serverCapacity {
+				continue
+			}
+
+			cacheALatency := server.endpointLatencyMap[potentialRequest.endpointId]
+			gainedLatencyPerRequest := potentialRequest.endpoint.dcLatency - cacheALatency
+			if videoAlreadyAllocatedGlobally && globalLatencyPerRequest < gainedLatencyPerRequest {
 				continue
 			}
 
@@ -50,7 +57,7 @@ func algorithm(
 			videoTotlaSize += video.size
 
 			server.allocatedVideoMap[potentialRequest.videoId] = true
-			globalAllocationMap[potentialRequest.videoId] = true
+			globalAllocationMap[potentialRequest.videoId] = gainedLatencyPerRequest
 		}
 
 		for _, potentialRequest := range server.potentialRequests {
