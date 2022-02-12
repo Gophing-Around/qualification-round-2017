@@ -31,10 +31,10 @@ func algorithm(
 			gainA := dcLatencyA - cacheALatency
 			gainB := dcLatencyB - cacheBLatency
 
-			videoASize := requestA.video.size
-			videoBSize := requestB.video.size
+			// videoASize := requestA.video.size
+			// videoBSize := requestB.video.size
 
-			return gainA*requestA.nRequests/videoASize > gainB*requestB.nRequests/videoBSize
+			return gainA*requestA.nRequests > gainB*requestB.nRequests
 		})
 
 		for _, potentialRequest := range server.potentialRequests {
