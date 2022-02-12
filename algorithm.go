@@ -31,10 +31,10 @@ func algorithm(
 			gainA := dcLatencyA - cacheALatency
 			gainB := dcLatencyB - cacheBLatency
 
-			// videoASize := requestA.video.size
-			// videoBSize := requestB.video.size
+			videoASize := requestA.video.size
+			videoBSize := requestB.video.size
 
-			return gainA*requestA.nRequests > gainB*requestB.nRequests
+			return gainA*requestA.nRequests/videoASize > gainB*requestB.nRequests/videoBSize
 		})
 
 		for _, potentialRequest := range server.potentialRequests {
@@ -42,13 +42,12 @@ func algorithm(
 			videoAlreadyAllocatedInServer := server.allocatedVideoMap[potentialRequest.videoId]
 			globalLatencyPerRequest, videoAlreadyAllocatedGlobally := globalAllocationMap[potentialRequest.videoId]
 
-			// videoAlreadyAllocatedGlobally ||
 			if videoAlreadyAllocatedInServer || videoTotlaSize+video.size > server.serverCapacity {
 				continue
 			}
 
 			cacheALatency := server.endpointLatencyMap[potentialRequest.endpointId]
-			gainedLatencyPerRequest := potentialRequest.endpoint.dcLatency - cacheALatency
+			gainedLatencyPerRequest := (potentialRequest.endpoint.dcLatency - cacheALatency) * potentialRequest.nRequests
 			if videoAlreadyAllocatedGlobally && globalLatencyPerRequest < gainedLatencyPerRequest {
 				continue
 			}
