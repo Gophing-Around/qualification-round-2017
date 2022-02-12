@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 )
 
 func main() {
 	files := []string{
 		// Uncomment the line with the desired files (add other lines if needed)
-		"a",
-		// "a", "b", "c", "d", "e", "f",
+		// "a",
+		"a", "b", "c", "d", "e",
 		// "a", "b",
 		// "a", "b", "e", "f",
 		// "c",
@@ -35,11 +36,11 @@ func main() {
 		// }
 		// printInputMetrics(input)
 
-		result := algorithm(config, videos, serversMap, endpointsMap, requestsList)
+		algorithm(config, videos, serversMap, endpointsMap, requestsList)
 
-		// output := buildOutput(result)
+		output := buildOutput(serversMap)
 		// printResultMetrics(result)
 
-		// ioutil.WriteFile(fmt.Sprintf("./result/%s.out", fileName), []byte(output), 0644)
+		ioutil.WriteFile(fmt.Sprintf("./result/%s.out", fileName), []byte(output), 0644)
 	}
 }

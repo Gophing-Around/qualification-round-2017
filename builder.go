@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"strings"
+)
+
 type mapOfServers map[int]*Server
 type mapOfEndpoints map[int]*Endpoint
 
@@ -15,6 +20,7 @@ type Video struct {
 	id   int
 	size int
 }
+
 type Endpoint struct {
 	id        int
 	dcLatency int
@@ -34,6 +40,9 @@ type RequestGroup struct {
 type Server struct {
 	id                 int
 	endpointLatencyMap map[int]int
+	serverCapacity     int
+
+	allocatedVideos []string // list video id
 }
 
 func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints, []*RequestGroup) {
@@ -85,6 +94,7 @@ func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints
 				server = &Server{
 					id:                 serverId,
 					endpointLatencyMap: make(map[int]int),
+					serverCapacity:     config.cacheServersCapacity,
 				}
 			}
 
@@ -117,6 +127,12 @@ func buildInput(inputSet string) (Config, []*Video, mapOfServers, mapOfEndpoints
 	return config, videos, serversMap, endpointsMap, requestsList
 }
 
-func buildOutput(result int) string {
-	return "42"
+func buildOutput(servers mapOfServers) string {
+	result := fmt.Sprintf("%d", len(servers))
+
+	for _, server := range servers {
+		serverLine := fmt.Sprintf("%d %s", server.id, strings.Join(server.allocatedVideos, " "))
+		result += fmt.Sprintf("\n%s", serverLine)
+	}
+	return result
 }
